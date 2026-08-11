@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from extensions import db, login_manager
 
 app = Flask(__name__)
@@ -16,7 +16,9 @@ import routes
 
 @app.route("/")
 def home():
-    return "Hello World!"
+    posts = TravelPost.query.order_by(TravelPost.created_at.desc()).all()
+
+    return render_template("home.html", posts=posts)
 
 
 if __name__ == "__main__":
