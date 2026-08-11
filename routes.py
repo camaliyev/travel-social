@@ -1,8 +1,11 @@
 from flask import render_template, redirect, url_for, flash
 from app import app
 from extensions import db
-from forms import RegistrationForm
+from forms import RegistrationForm, LoginForm
 from models import User
+from flask_login import login_user, logout_user, login_required, current_user
+
+
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -22,4 +25,20 @@ def register():
         return redirect(url_for("home"))
 
     return render_template("register.html", form=form)
-    
+
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user)
+            flash("Login successful!")
+            return redirect(url_for("home"))
+        else:
+            flash("Invalid email or password. Please try again.")
+            return redirect(url_for("login"))
+
+    return render_template("login.html", form=form)
