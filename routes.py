@@ -42,3 +42,11 @@ def login():
             return redirect(url_for("login"))
 
     return render_template("login.html", form=form)
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("You have been logged out.")
+    return redirect(url_for("home"))
