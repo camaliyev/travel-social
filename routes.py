@@ -1,9 +1,10 @@
 from flask import render_template, redirect, url_for, flash
 from app import app
 from extensions import db
-from forms import RegistrationForm, LoginForm
-from models import User
+from forms import RegistrationForm, LoginForm, TravelPostForm
+from models import User, TravelPost
 from flask_login import login_user, logout_user, login_required, current_user
+
 
 
 
@@ -50,3 +51,25 @@ def logout():
     logout_user()
     flash("You have been logged out.")
     return redirect(url_for("home"))
+
+@app.route("/create_post", methods=["GET", "POST"])
+@login_required
+def create_post():
+    form = TravelPostForm()
+
+    if form.validate_on_submit():
+        post = TravelPost(
+            title=form.title.data,
+            description=form.description.data,
+            country=form.country.data,
+            city=form.city.data,
+            user_id=current_user.id 
+        )
+
+        db.session.add(post)
+        db.session.commit()
+
+        flash("Travel post created successfully!")
+        return redirect(url_for("home"))
+
+    return render_template("create_post.html", form=form)
