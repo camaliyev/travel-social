@@ -105,3 +105,18 @@ def edit_post(post_id):
 
 
     return render_template("edit_post.html", form=form, post=post)
+
+
+@app.route("/delete_post/<int:post_id>", methods=["POST"])
+@login_required
+def delete_post(post_id):
+    post = TravelPost.query.get_or_404(post_id)
+
+    if post.user_id != current_user.id:
+        flash("You are not authorized to delete this post.")
+        return redirect(url_for("home"))
+
+    db.session.delete(post)
+    db.session.commit()
+    flash("Travel post deleted successfully!")
+    return redirect(url_for("profile", username=current_user.username))
