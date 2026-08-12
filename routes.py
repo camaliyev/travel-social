@@ -73,3 +73,11 @@ def create_post():
         return redirect(url_for("home"))
 
     return render_template("create_post.html", form=form)
+
+
+@app.route("/profile/<username>")
+@login_required
+def profile(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    posts = user.posts
+    return render_template("profile.html", user=user, posts=posts)
