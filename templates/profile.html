@@ -43,13 +43,19 @@
                 <small>{{ post.created_at.strftime("%Y-%m-%d %H:%M") }}</small>
             </p>
 
+            {% if current_user.id == post.user_id %}
+                <a href="{{ url_for('edit_post', post_id=post.id) }}">
+                    Edit Post
+                </a>
+            {% endif %}
+
             <hr>
 
         {% endfor %}
 
     {% else %}
 
-        <p>This user hasn't created any travel posts yet.</p>
+        <p>No travel posts yet.</p>
 
     {% endif %}
 

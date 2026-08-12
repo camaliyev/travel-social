@@ -81,3 +81,27 @@ def profile(username):
     user = User.query.filter_by(username=username).first_or_404()
     posts = user.posts
     return render_template("profile.html", user=user, posts=posts)
+
+
+@app.route("/edit_post/<int:post_id>", methods=["GET", "POST"])
+@login_required
+def edit_post(post_id):
+    post = TravelPost.query.get_or_404(post_id)
+
+    if post.user_id != current_user.id:
+        flash("You are not authorized to edit this post.")
+        return redirect(url_for("home"))
+
+    form = TravelPostForm(obj=post)
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.description = form.description.data
+        post.country = form.country.data
+        post.city = form.city.data
+
+        db.session.commit()
+        flash("Travel post updated successfully!")
+        return redirect(url_for("profile", username=current_user.username))
+
+
+    return render_template("edit_post.html", form=form, post=post)
