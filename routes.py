@@ -120,3 +120,9 @@ def delete_post(post_id):
     db.session.commit()
     flash("Travel post deleted successfully!")
     return redirect(url_for("profile", username=current_user.username))
+
+
+@app.route("/post/<int:post_id>")
+def post_detail(post_id):
+    post = TravelPost.query.get_or_404(post_id)
+    return render_template("post_detail.html", post=post)
