@@ -1,8 +1,10 @@
+from xml.etree.ElementTree import Comment
+
 from flask import render_template, redirect, url_for, flash
 from app import app
 from extensions import db
-from forms import RegistrationForm, LoginForm, TravelPostForm
-from models import User, TravelPost
+from forms import RegistrationForm, LoginForm, TravelPostForm, CommentForm
+from models import User, TravelPost, Comment
 from flask_login import login_user, logout_user, login_required, current_user
 
 
@@ -125,4 +127,37 @@ def delete_post(post_id):
 @app.route("/post/<int:post_id>")
 def post_detail(post_id):
     post = TravelPost.query.get_or_404(post_id)
-    return render_template("post_detail.html", post=post)
+    form = CommentForm()
+
+    return render_template(
+        "post_detail.html",
+        post=post,
+        form=form
+    )
+
+
+@app.route("/add_comment/<int:post_id>", methods=["POST"])
+@login_required
+def add_comment(post_id):
+    post = TravelPost.query.get_or_404(post_id)
+    form = CommentForm()
+
+    if form.validate_on_submit():
+        comment = Comment(
+            text=form.text.data,
+            user_id=current_user.id,
+            post_id=post.id
+        )
+
+        db.session.add(comment)
+        db.session.commit()
+        flash("Comment added successfully!")
+    else:
+        flash("Failed to add comment. Please ensure the comment is not empty.") 
+
+
+    return render_template(
+        "post_detail.html",
+        post=post,
+        form=form
+    )

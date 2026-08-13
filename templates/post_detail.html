@@ -29,31 +29,94 @@
     </p>
 
     <p>
-        <small>
-            {{ post.created_at.strftime("%Y-%m-%d %H:%M") }}
-        </small>
+        <small>{{ post.created_at.strftime("%Y-%m-%d %H:%M") }}</small>
     </p>
 
     <hr>
 
     {% if current_user.is_authenticated and current_user.id == post.user_id %}
+
         <a href="{{ url_for('edit_post', post_id=post.id) }}">
             Edit Post
         </a>
+
         |
+
         <form action="{{ url_for('delete_post', post_id=post.id) }}"
               method="POST"
               style="display:inline;">
             <button type="submit">Delete Post</button>
         </form>
-        <br><br>
+
     {% endif %}
 
+    <hr>
+
+    <h2>Comments</h2>
+
+    {% if current_user.is_authenticated %}
+
+        <form action="{{ url_for('add_comment', post_id=post.id) }}" method="POST">
+
+            {{ form.hidden_tag() }}
+
+            <p>
+                {{ form.text.label }}<br>
+                {{ form.text(rows=4, cols=60) }}
+            </p>
+
+            <p>
+                {{ form.submit() }}
+            </p>
+
+        </form>
+
+    {% else %}
+
+        <p>
+            <a href="{{ url_for('login') }}">Login</a>
+            to leave a comment.
+        </p>
+
+    {% endif %}
+
+    <hr>
+
+    {% if post.comments %}
+
+        {% for comment in post.comments %}
+
+            <div>
+
+                <strong>
+                    <a href="{{ url_for('profile', username=comment.author.username) }}">
+                        {{ comment.author.username }}
+                    </a>
+                </strong>
+
+                <small>
+                    {{ comment.created_at.strftime("%Y-%m-%d %H:%M") }}
+                </small>
+
+                <p>
+                    {{ comment.text }}
+                </p>
+
+            </div>
+
+            <hr>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No comments yet.</p>
+
+    {% endif %}
+
+    <br>
+
     <a href="{{ url_for('home') }}">← Back to Home</a>
-    |
-    <a href="{{ url_for('profile', username=post.author.username) }}">
-        View {{ post.author.username }}'s Profile
-    </a>
 
 </body>
 </html>

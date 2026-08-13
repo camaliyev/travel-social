@@ -22,3 +22,8 @@ class TravelPostForm(FlaskForm):
     country = StringField('Country', validators=[DataRequired()])
     city = StringField('City', validators=[DataRequired()])
     submit = SubmitField('Create Post')
+
+
+class CommentForm(FlaskForm):
+    text = TextAreaField('Comment', validators=[DataRequired()])
+    submit = SubmitField('Add Comment')
