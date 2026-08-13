@@ -161,3 +161,22 @@ def add_comment(post_id):
         post=post,
         form=form
     )
+
+
+@app.route("/delete_comment/<int:comment_id>", methods=["POST"])
+@login_required
+def delete_comment(comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+
+    if comment.user_id != current_user.id:
+        flash("You are not authorized to delete this comment.")
+        return redirect(url_for("post_detail", post_id=comment.post_id))
+
+    post_id = comment.post_id
+
+    db.session.delete(comment)
+    db.session.commit()
+
+    flash("Comment deleted successfully!")
+
+    return redirect(url_for("post_detail", post_id=post_id))
