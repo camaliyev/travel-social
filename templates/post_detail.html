@@ -1,140 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ post.title }}</title>
-</head>
 
+    <title>{{ post.title }}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
 <body>
 
-    <h1>{{ post.title }}</h1>
+    <header class="site-header">
+        <div class="site-header-inner">
 
-    <p>
-        <strong>Country:</strong> {{ post.country }}
-    </p>
+            <div class="logo">
+                🌍 Travel Social
+            </div>
 
-    <p>
-        <strong>City:</strong> {{ post.city }}
-    </p>
+            <div class="nav-links">
+                <a href="{{ url_for('home') }}">Home</a>
 
-    <p>
-        {{ post.description }}
-    </p>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('create_post') }}">Create Post</a>
+                    <a href="{{ url_for('profile', username=current_user.username) }}">Profile</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Login</a>
+                {% endif %}
+            </div>
 
-    <p>
-        <strong>Posted by:</strong>
-        <a href="{{ url_for('profile', username=post.author.username) }}">
-            {{ post.author.username }}
-        </a>
-    </p>
+        </div>
+    </header>
 
-    <p>
-        <small>{{ post.created_at.strftime("%Y-%m-%d %H:%M") }}</small>
-    </p>z
+    <div class="container">
 
-    <hr>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-success">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-    <!-- Like section starts here -->
+        <div class="post-card">
 
-    <p>
-        ❤️ {{ post.likes|length }} Likes
-    </p>
+            <h1 class="post-title">
+                {{ post.title }}
+            </h1>
 
-    {% if current_user.is_authenticated %}
-    <form action="{{ url_for('like_post', post_id=post.id) }}" method="POST">
-        <button type="submit">
-            ❤️ Like
-        </button>
-    </form>
-    {% endif %}
+            <div class="post-location">
+                📍 {{ post.city }}, {{ post.country }}
+            </div>
 
-    <hr>
+            <p class="post-description">
+                {{ post.description }}
+            </p>
 
-    <h2>Comments</h2>
+            <div class="post-meta">
+                Posted by
+                <a href="{{ url_for('profile', username=post.author.username) }}">
+                    {{ post.author.username }}
+                </a>
 
-    {% if current_user.is_authenticated %}
+                · {{ post.created_at.strftime("%Y-%m-%d %H:%M") }}
+            </div>
 
-    <form action="{{ url_for('add_comment', post_id=post.id) }}" method="POST">
+            <div class="post-actions">
 
-        {{ form.hidden_tag() }}
+                <span class="like-count">
+                    ❤️ {{ post.likes|length }} Likes
+                </span>
 
-        <p>
-            {{ form.text.label }}<br>
-            {{ form.text(rows=4, cols=60) }}
-        </p>
+                {% if current_user.is_authenticated %}
 
-        <p>
-            {{ form.submit() }}
-        </p>
+                    <form action="{{ url_for('like_post', post_id=post.id) }}"
+                          method="POST"
+                          style="margin: 0; padding: 0; background: none;">
 
-    </form>
+                        <button class="like-button" type="submit">
+                            ❤️ Like
+                        </button>
 
-    {% else %}
+                    </form>
 
-    <p>
-        <a href="{{ url_for('login') }}">Login</a> to leave a comment.
-    </p>
+                {% endif %}
 
-    {% endif %}
+                {% if current_user.is_authenticated and current_user.id == post.user_id %}
 
-    <hr>
+                    <a href="{{ url_for('edit_post', post_id=post.id) }}">
+                        Edit
+                    </a>
 
-    {% if post.comments %}
+                    <form action="{{ url_for('delete_post', post_id=post.id) }}"
+                          method="POST"
+                          style="margin: 0; padding: 0; background: none;">
 
-    {% for comment in post.comments %}
+                        <button class="danger-button" type="submit">
+                            Delete
+                        </button>
 
-    <div>
+                    </form>
 
-        <strong>
-            <a href="{{ url_for('profile', username=comment.author.username) }}">
-                {{ comment.author.username }}
-            </a>
-        </strong>
+                {% endif %}
 
-        <small>
-            {{ comment.created_at.strftime("%Y-%m-%d %H:%M") }}
-        </small>
+            </div>
 
-        <p>
-            {{ comment.text }}
-        </p>
+        </div>
 
-        {% if current_user.is_authenticated and current_user.id == comment.user_id %}
+        <div class="comments-section">
 
-        <form action="{{ url_for('delete_comment', comment_id=comment.id) }}" method="POST" style="display:inline;">
+            <h2>Comments</h2>
 
-            <button type="submit">
-                Delete Comment
-            </button>
+            {% if current_user.is_authenticated %}
 
-        </form>
+                <form class="comment-form"
+                      action="{{ url_for('add_comment', post_id=post.id) }}"
+                      method="POST">
 
-        {% endif %}
+                    {{ form.hidden_tag() }}
+
+                    <p>
+                        {{ form.text.label }}
+                    </p>
+
+                    {{ form.text() }}
+
+                    <button class="primary-button" type="submit">
+                        Add Comment
+                    </button>
+
+                </form>
+
+            {% else %}
+
+                <div class="post-card">
+                    <p>
+                        <a href="{{ url_for('login') }}">Login</a>
+                        to leave a comment.
+                    </p>
+                </div>
+
+            {% endif %}
+
+            {% if post.comments %}
+
+                {% for comment in post.comments %}
+
+                    <div class="comment">
+
+                        <div class="comment-header">
+
+                            <a class="comment-author"
+                               href="{{ url_for('profile', username=comment.author.username) }}">
+                                {{ comment.author.username }}
+                            </a>
+
+                            <span class="comment-date">
+                                {{ comment.created_at.strftime("%Y-%m-%d %H:%M") }}
+                            </span>
+
+                        </div>
+
+                        <div class="comment-text">
+                            {{ comment.text }}
+                        </div>
+
+                        {% if current_user.is_authenticated and current_user.id == comment.user_id %}
+
+                            <br>
+
+                            <form action="{{ url_for('delete_comment', comment_id=comment.id) }}"
+                                  method="POST"
+                                  style="margin: 0; padding: 0; background: none;">
+
+                                <button class="danger-button" type="submit">
+                                    Delete Comment
+                                </button>
+
+                            </form>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="comment">
+                    No comments yet.
+                </div>
+
+            {% endif %}
+
+        </div>
 
     </div>
 
-    <hr>
-
-    {% endfor %}
-
-    {% else %}
-
-    <p>No comments yet.</p>
-
-    {% endif %}
-
-    <br>
-
-    <a href="{{ url_for('home') }}">← Back to Home</a>
-
-    |
-
-    <a href="{{ url_for('profile', username=post.author.username) }}">
-        View {{ post.author.username }}'s Profile
-    </a>
-
 </body>
-
 </html>

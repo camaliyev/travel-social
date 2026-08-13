@@ -4,53 +4,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-    <h1>Create Account</h1>
+<header class="site-header">
+
+    <div class="site-header-inner">
+
+        <div class="logo">
+            🌍 Travel Social
+        </div>
+
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('login') }}">Login</a>
+        </div>
+
+    </div>
+
+</header>
+
+<div class="container">
 
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             {% for message in messages %}
-                <p style="color:red;">{{ message }}</p>
+                <div class="flash-success">
+                    {{ message }}
+                </div>
             {% endfor %}
         {% endif %}
     {% endwith %}
 
-    <form method="POST">
+    <div class="form-card">
 
-        {{ form.hidden_tag() }}
-
-        <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=32) }}
-        </p>
+        <h1>Create an Account</h1>
 
         <p>
-            {{ form.email.label }}<br>
-            {{ form.email(size=32) }}
+            Join Travel Social and share your adventures with the world.
         </p>
+
+        <form method="POST">
+
+            {{ form.hidden_tag() }}
+
+            <p>
+                {{ form.username.label }}<br>
+                {{ form.username() }}
+            </p>
+
+            <p>
+                {{ form.email.label }}<br>
+                {{ form.email() }}
+            </p>
+
+            <p>
+                {{ form.password.label }}<br>
+                {{ form.password() }}
+            </p>
+
+            <p>
+                {{ form.confirm_password.label }}<br>
+                {{ form.confirm_password() }}
+            </p>
+
+            <button class="primary-button" type="submit">
+                Create Account
+            </button>
+
+        </form>
+
+        <br>
 
         <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=32) }}
+            Already have an account?
+            <a href="{{ url_for('login') }}">Login</a>
         </p>
 
-        <p>
-            {{ form.confirm_password.label }}<br>
-            {{ form.confirm_password(size=32) }}
-        </p>
+    </div>
 
-        <p>
-            {{ form.submit() }}
-        </p>
-
-    </form>
-
-    <p>
-        Already have an account?
-        <a href="/login">Login</a>
-    </p>
+</div>
 
 </body>
 </html>

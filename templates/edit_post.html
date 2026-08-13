@@ -4,54 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Travel Post</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-    <h1>Edit Travel Post</h1>
+<header class="site-header">
+    <div class="site-header-inner">
+
+        <div class="logo">
+            🌍 Travel Social
+        </div>
+
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('profile', username=current_user.username) }}">Profile</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+
+    </div>
+</header>
+
+<div class="container">
 
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             {% for message in messages %}
-                <p>{{ message }}</p>
+                <div class="flash-success">
+                    {{ message }}
+                </div>
             {% endfor %}
         {% endif %}
     {% endwith %}
 
-    <form method="POST">
+    <div class="form-card">
 
-        {{ form.hidden_tag() }}
+        <h1>Edit Travel Post</h1>
 
-        <p>
-            {{ form.title.label }}<br>
-            {{ form.title(size=50) }}
-        </p>
+        <form method="POST">
 
-        <p>
-            {{ form.description.label }}<br>
-            {{ form.description(rows=6, cols=50) }}
-        </p>
+            {{ form.hidden_tag() }}
 
-        <p>
-            {{ form.country.label }}<br>
-            {{ form.country(size=50) }}
-        </p>
+            <p>
+                {{ form.title.label }}<br>
+                {{ form.title() }}
+            </p>
 
-        <p>
-            {{ form.city.label }}<br>
-            {{ form.city(size=50) }}
-        </p>
+            <p>
+                {{ form.country.label }}<br>
+                {{ form.country() }}
+            </p>
 
-        <p>
-            {{ form.submit(value="Update Post") }}
-        </p>
+            <p>
+                {{ form.city.label }}<br>
+                {{ form.city() }}
+            </p>
 
-    </form>
+            <p>
+                {{ form.description.label }}<br>
+                {{ form.description(rows=6) }}
+            </p>
 
-    <p>
+            <button class="primary-button" type="submit">
+                Save Changes
+            </button>
+
+        </form>
+
+        <br>
+
         <a href="{{ url_for('profile', username=current_user.username) }}">
-            Back to Profile
+            ← Back to Profile
         </a>
-    </p>
+
+    </div>
+
+</div>
 
 </body>
 </html>

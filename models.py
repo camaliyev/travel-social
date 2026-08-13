@@ -35,6 +35,7 @@ class TravelPost(db.Model):
     city = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    image_filename = db.Column(db.String(255), nullable=True) 
 
     comments = db.relationship('Comment', backref='post', lazy=True)
     likes = db.relationship('Like', backref='post', lazy=True)
