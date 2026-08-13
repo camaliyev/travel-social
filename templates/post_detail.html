@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ post.title }}</title>
 </head>
+
 <body>
 
     <h1>{{ post.title }}</h1>
@@ -30,24 +32,22 @@
 
     <p>
         <small>{{ post.created_at.strftime("%Y-%m-%d %H:%M") }}</small>
-    </p>
+    </p>z
 
     <hr>
 
-    {% if current_user.is_authenticated and current_user.id == post.user_id %}
+    <!-- Like section starts here -->
 
-        <a href="{{ url_for('edit_post', post_id=post.id) }}">
-            Edit Post
-        </a>
+    <p>
+        ❤️ {{ post.likes|length }} Likes
+    </p>
 
-        |
-
-        <form action="{{ url_for('delete_post', post_id=post.id) }}"
-              method="POST"
-              style="display:inline;">
-            <button type="submit">Delete Post</button>
-        </form>
-
+    {% if current_user.is_authenticated %}
+    <form action="{{ url_for('like_post', post_id=post.id) }}" method="POST">
+        <button type="submit">
+            ❤️ Like
+        </button>
+    </form>
     {% endif %}
 
     <hr>
@@ -56,26 +56,26 @@
 
     {% if current_user.is_authenticated %}
 
-        <form action="{{ url_for('add_comment', post_id=post.id) }}" method="POST">
+    <form action="{{ url_for('add_comment', post_id=post.id) }}" method="POST">
 
-            {{ form.hidden_tag() }}
+        {{ form.hidden_tag() }}
 
-            <p>
-                {{ form.text.label }}<br>
-                {{ form.text(rows=4, cols=60) }}
-            </p>
+        <p>
+            {{ form.text.label }}<br>
+            {{ form.text(rows=4, cols=60) }}
+        </p>
 
-            <p>
-                {{ form.submit() }}
-            </p>
+        <p>
+            {{ form.submit() }}
+        </p>
 
-        </form>
+    </form>
 
     {% else %}
 
-        <p>
-            <a href="{{ url_for('login') }}">Login</a> to leave a comment.
-        </p>
+    <p>
+        <a href="{{ url_for('login') }}">Login</a> to leave a comment.
+    </p>
 
     {% endif %}
 
@@ -83,47 +83,45 @@
 
     {% if post.comments %}
 
-        {% for comment in post.comments %}
+    {% for comment in post.comments %}
 
-            <div>
+    <div>
 
-                <strong>
-                    <a href="{{ url_for('profile', username=comment.author.username) }}">
-                        {{ comment.author.username }}
-                    </a>
-                </strong>
+        <strong>
+            <a href="{{ url_for('profile', username=comment.author.username) }}">
+                {{ comment.author.username }}
+            </a>
+        </strong>
 
-                <small>
-                    {{ comment.created_at.strftime("%Y-%m-%d %H:%M") }}
-                </small>
+        <small>
+            {{ comment.created_at.strftime("%Y-%m-%d %H:%M") }}
+        </small>
 
-                <p>
-                    {{ comment.text }}
-                </p>
+        <p>
+            {{ comment.text }}
+        </p>
 
-                {% if current_user.is_authenticated and current_user.id == comment.user_id %}
+        {% if current_user.is_authenticated and current_user.id == comment.user_id %}
 
-                    <form action="{{ url_for('delete_comment', comment_id=comment.id) }}"
-                          method="POST"
-                          style="display:inline;">
+        <form action="{{ url_for('delete_comment', comment_id=comment.id) }}" method="POST" style="display:inline;">
 
-                        <button type="submit">
-                            Delete Comment
-                        </button>
+            <button type="submit">
+                Delete Comment
+            </button>
 
-                    </form>
+        </form>
 
-                {% endif %}
+        {% endif %}
 
-            </div>
+    </div>
 
-            <hr>
+    <hr>
 
-        {% endfor %}
+    {% endfor %}
 
     {% else %}
 
-        <p>No comments yet.</p>
+    <p>No comments yet.</p>
 
     {% endif %}
 
@@ -138,4 +136,5 @@
     </a>
 
 </body>
+
 </html>

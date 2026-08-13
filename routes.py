@@ -4,7 +4,7 @@ from flask import render_template, redirect, url_for, flash
 from app import app
 from extensions import db
 from forms import RegistrationForm, LoginForm, TravelPostForm, CommentForm
-from models import User, TravelPost, Comment
+from models import User, TravelPost, Comment, Like
 from flask_login import login_user, logout_user, login_required, current_user
 
 
@@ -180,3 +180,24 @@ def delete_comment(comment_id):
     flash("Comment deleted successfully!")
 
     return redirect(url_for("post_detail", post_id=post_id))
+
+
+@app.route("/like_post/<int:post_id>", methods=["POST"])
+@login_required
+def like_post(post_id):
+    post = TravelPost.query.get_or_404(post_id)
+
+    existing_like = Like.query.filter_by(user_id=current_user.id, post_id=post.id).first()
+
+    if existing_like:
+        db.session.delete(existing_like)
+        db.session.commit()
+        flash("You have unliked this post.")
+
+    else:
+        like = Like(user_id=current_user.id, post_id=post.id)
+        db.session.add(like)
+        db.session.commit()
+        flash("You have liked this post.")
+
+    return redirect(url_for("post_detail", post_id=post.id))
