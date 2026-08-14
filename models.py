@@ -37,8 +37,8 @@ class TravelPost(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     image_filename = db.Column(db.String(255), nullable=True) 
 
-    comments = db.relationship('Comment', backref='post', lazy=True)
-    likes = db.relationship('Like', backref='post', lazy=True)
+    comments = db.relationship('Comment', backref='post', lazy=True, cascade="all, delete-orphan")
+    likes = db.relationship('Like', backref='post', lazy=True, cascade="all, delete-orphan")
 
 
 class Comment(db.Model):

@@ -1,3 +1,6 @@
+import os
+from werkzeug.utils import secure_filename
+
 from xml.etree.ElementTree import Comment
 
 from flask import render_template, redirect, url_for, flash
@@ -60,11 +63,22 @@ def create_post():
     form = TravelPostForm()
 
     if form.validate_on_submit():
+        image_filename = None
+
+        if form.image.data:
+            filename = secure_filename(form.image.data.filename)
+
+            form.image.data.save(
+                 os.path.join(app.config["UPLOAD_FOLDER"], filename)
+            )
+
+            image_filename = filename
         post = TravelPost(
             title=form.title.data,
             description=form.description.data,
             country=form.country.data,
             city=form.city.data,
+            image_filename=image_filename,
             user_id=current_user.id 
         )
 

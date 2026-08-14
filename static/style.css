@@ -259,6 +259,16 @@ input[type="submit"] {
     margin-bottom: 16px;
 
     font-size: 15px;
+
+    
+}
+.post-image {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin: 20px 0;
+    display: block;
 }
 
 
@@ -282,5 +292,14 @@ input[type="submit"] {
 
     .container {
         width: 94%;
+    }
+
+    .post-image {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin: 20px 0;
+    display: block;
     }
 }

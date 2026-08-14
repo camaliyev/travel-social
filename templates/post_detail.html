@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>{{ post.title }}</title>
 
     <link rel="stylesheet"
@@ -11,194 +10,154 @@
 </head>
 <body>
 
-    <header class="site-header">
-        <div class="site-header-inner">
+<header class="site-header">
+    <div class="site-header-inner">
 
-            <div class="logo">
-                🌍 Travel Social
-            </div>
-
-            <div class="nav-links">
-                <a href="{{ url_for('home') }}">Home</a>
-
-                {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('create_post') }}">Create Post</a>
-                    <a href="{{ url_for('profile', username=current_user.username) }}">Profile</a>
-                    <a href="{{ url_for('logout') }}">Logout</a>
-                {% else %}
-                    <a href="{{ url_for('login') }}">Login</a>
-                {% endif %}
-            </div>
-
-        </div>
-    </header>
-
-    <div class="container">
-
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="flash-success">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <div class="post-card">
-
-            <h1 class="post-title">
-                {{ post.title }}
-            </h1>
-
-            <div class="post-location">
-                📍 {{ post.city }}, {{ post.country }}
-            </div>
-
-            <p class="post-description">
-                {{ post.description }}
-            </p>
-
-            <div class="post-meta">
-                Posted by
-                <a href="{{ url_for('profile', username=post.author.username) }}">
-                    {{ post.author.username }}
-                </a>
-
-                · {{ post.created_at.strftime("%Y-%m-%d %H:%M") }}
-            </div>
-
-            <div class="post-actions">
-
-                <span class="like-count">
-                    ❤️ {{ post.likes|length }} Likes
-                </span>
-
-                {% if current_user.is_authenticated %}
-
-                    <form action="{{ url_for('like_post', post_id=post.id) }}"
-                          method="POST"
-                          style="margin: 0; padding: 0; background: none;">
-
-                        <button class="like-button" type="submit">
-                            ❤️ Like
-                        </button>
-
-                    </form>
-
-                {% endif %}
-
-                {% if current_user.is_authenticated and current_user.id == post.user_id %}
-
-                    <a href="{{ url_for('edit_post', post_id=post.id) }}">
-                        Edit
-                    </a>
-
-                    <form action="{{ url_for('delete_post', post_id=post.id) }}"
-                          method="POST"
-                          style="margin: 0; padding: 0; background: none;">
-
-                        <button class="danger-button" type="submit">
-                            Delete
-                        </button>
-
-                    </form>
-
-                {% endif %}
-
-            </div>
-
+        <div class="logo">
+            🌍 Travel Social
         </div>
 
-        <div class="comments-section">
-
-            <h2>Comments</h2>
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
 
             {% if current_user.is_authenticated %}
+                <a href="{{ url_for('profile', username=current_user.username) }}">
+                    Profile
+                </a>
 
-                <form class="comment-form"
-                      action="{{ url_for('add_comment', post_id=post.id) }}"
-                      method="POST">
-
-                    {{ form.hidden_tag() }}
-
-                    <p>
-                        {{ form.text.label }}
-                    </p>
-
-                    {{ form.text() }}
-
-                    <button class="primary-button" type="submit">
-                        Add Comment
-                    </button>
-
-                </form>
-
-            {% else %}
-
-                <div class="post-card">
-                    <p>
-                        <a href="{{ url_for('login') }}">Login</a>
-                        to leave a comment.
-                    </p>
-                </div>
-
+                <a href="{{ url_for('logout') }}">
+                    Logout
+                </a>
             {% endif %}
-
-            {% if post.comments %}
-
-                {% for comment in post.comments %}
-
-                    <div class="comment">
-
-                        <div class="comment-header">
-
-                            <a class="comment-author"
-                               href="{{ url_for('profile', username=comment.author.username) }}">
-                                {{ comment.author.username }}
-                            </a>
-
-                            <span class="comment-date">
-                                {{ comment.created_at.strftime("%Y-%m-%d %H:%M") }}
-                            </span>
-
-                        </div>
-
-                        <div class="comment-text">
-                            {{ comment.text }}
-                        </div>
-
-                        {% if current_user.is_authenticated and current_user.id == comment.user_id %}
-
-                            <br>
-
-                            <form action="{{ url_for('delete_comment', comment_id=comment.id) }}"
-                                  method="POST"
-                                  style="margin: 0; padding: 0; background: none;">
-
-                                <button class="danger-button" type="submit">
-                                    Delete Comment
-                                </button>
-
-                            </form>
-
-                        {% endif %}
-
-                    </div>
-
-                {% endfor %}
-
-            {% else %}
-
-                <div class="comment">
-                    No comments yet.
-                </div>
-
-            {% endif %}
-
         </div>
 
     </div>
+</header>
+
+<div class="container">
+
+    <div class="post-card">
+
+        <h1>{{ post.title }}</h1>
+
+        {% if post.image_filename %}
+            <img
+                src="{{ url_for('static', filename='uploads/' + post.image_filename) }}"
+                alt="{{ post.title }}"
+                class="post-image">
+        {% endif %}
+
+        <p>
+            📍 {{ post.city }}, {{ post.country }}
+        </p>
+
+        <p>
+            {{ post.description }}
+        </p>
+
+        <p>
+            Posted by
+            <a href="{{ url_for('profile', username=post.author.username) }}">
+                {{ post.author.username }}
+            </a>
+            ·
+            {{ post.created_at.strftime("%Y-%m-%d %H:%M") }}
+        </p>
+
+        <hr>
+
+        <p>
+            ❤️ {{ post.likes|length }} Likes
+        </p>
+
+        {% if current_user.is_authenticated %}
+        <form action="{{ url_for('like_post', post_id=post.id) }}" method="POST">
+            <button class="primary-button" type="submit">
+                ❤️ Like
+            </button>
+        </form>
+        {% endif %}
+
+        {% if current_user.id == post.user_id %}
+            <br>
+
+            <a href="{{ url_for('edit_post', post_id=post.id) }}">
+                Edit
+            </a>
+
+            <form
+                action="{{ url_for('delete_post', post_id=post.id) }}"
+                method="POST"
+                style="display:inline;">
+
+                <button
+                    class="danger-button"
+                    type="submit"
+                    onclick="return confirm('Delete this post?')">
+                    Delete
+                </button>
+
+            </form>
+        {% endif %}
+
+    </div>
+
+    <h2>Comments</h2>
+
+    {% if current_user.is_authenticated %}
+
+    <div class="form-card">
+
+        <form
+            action="{{ url_for('add_comment', post_id=post.id) }}"
+            method="POST">
+
+            {{ form.hidden_tag() }}
+
+            <p>
+                {{ form.text.label }}<br>
+                {{ form.text(rows=4) }}
+            </p>
+
+            <button class="primary-button" type="submit">
+                Add Comment
+            </button>
+
+        </form>
+
+    </div>
+
+    {% endif %}
+
+    {% if post.comments %}
+
+        {% for comment in post.comments %}
+
+        <div class="comment-card">
+
+            <strong>{{ comment.author.username }}</strong>
+
+            <small>
+                {{ comment.created_at.strftime("%Y-%m-%d %H:%M") }}
+            </small>
+
+            <p>
+                {{ comment.text }}
+            </p>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="comment-card">
+            No comments yet.
+        </div>
+
+    {% endif %}
+
+</div>
 
 </body>
 </html>

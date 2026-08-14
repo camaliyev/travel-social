@@ -11,7 +11,6 @@
 <body>
 
 <header class="site-header">
-
     <div class="site-header-inner">
 
         <div class="logo">
@@ -25,26 +24,15 @@
         </div>
 
     </div>
-
 </header>
 
 <div class="container">
-
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="flash-success">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
 
     <div class="form-card">
 
         <h1>Create Travel Post</h1>
 
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
 
             {{ form.hidden_tag() }}
 
@@ -66,6 +54,11 @@
             <p>
                 {{ form.description.label }}<br>
                 {{ form.description(rows=6) }}
+            </p>
+
+            <p>
+                {{ form.image.label }}<br>
+                {{ form.image() }}
             </p>
 
             <button class="primary-button" type="submit">
