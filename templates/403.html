@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Denied</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="site-header-inner">
+        <div class="logo">
+            🌍 Travel Social
+        </div>
+
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+
+    <div class="post-card" style="text-align: center;">
+
+        <h1 style="font-size: 70px; margin-bottom: 10px;">
+            403
+        </h1>
+
+        <h2>Access Denied</h2>
+
+        <p>
+            You don't have permission to access this page.
+        </p>
+
+        <br>
+
+        <a class="primary-button"
+           href="{{ url_for('home') }}">
+            Back to Home
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>
