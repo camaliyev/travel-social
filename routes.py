@@ -3,7 +3,7 @@ from werkzeug.utils import secure_filename
 
 from xml.etree.ElementTree import Comment
 
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash, request
 from app import app
 from extensions import db
 from forms import RegistrationForm, LoginForm, TravelPostForm, CommentForm
@@ -215,3 +215,20 @@ def like_post(post_id):
         flash("You have liked this post.")
 
     return redirect(url_for("post_detail", post_id=post.id))
+
+
+@app.route("/search")
+def search():
+    query = request.args.get("q", "")
+
+    posts = TravelPost.query.filter(
+        (TravelPost.title.ilike(f"%{query}%")) |
+        (TravelPost.city.ilike(f"%{query}%")) |
+        (TravelPost.country.ilike(f"%{query}%"))
+    ).order_by(TravelPost.created_at.desc()).all()
+
+    return render_template(
+        "search_results.html",
+        posts=posts,
+        query=query
+    )

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel Social</title>
+    <title>Search Results</title>
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='style.css') }}">
@@ -58,32 +58,6 @@
 
 <div class="container">
 
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-
-            {% for message in messages %}
-
-                <div class="flash-success">
-                    {{ message }}
-                </div>
-
-            {% endfor %}
-
-        {% endif %}
-    {% endwith %}
-
-
-    {% if current_user.is_authenticated %}
-
-        <h2>
-            Welcome, {{ current_user.username }} 👋
-        </h2>
-
-    {% endif %}
-
-
-    <!-- SEARCH BAR -->
-
     <div class="form-card">
 
         <form action="{{ url_for('search') }}" method="GET">
@@ -91,6 +65,7 @@
             <input
                 type="text"
                 name="q"
+                value="{{ query }}"
                 placeholder="Search by title, city or country..."
             >
 
@@ -103,7 +78,15 @@
     </div>
 
 
-    <!-- POSTS -->
+    <h1>
+        Search Results
+    </h1>
+
+    <p>
+        Results for:
+        <strong>"{{ query }}"</strong>
+    </p>
+
 
     {% if posts %}
 
@@ -184,25 +167,13 @@
 
         <div class="post-card">
 
-            <h3>No posts yet 🌍</h3>
+            <h2>
+                No results found 😔
+            </h2>
 
-            {% if current_user.is_authenticated %}
-
-                <p>
-                    Be the first person to create a travel post.
-                </p>
-
-                <a href="{{ url_for('create_post') }}">
-                    Create Post
-                </a>
-
-            {% else %}
-
-                <p>
-                    Login or create an account to start sharing your travels.
-                </p>
-
-            {% endif %}
+            <p>
+                Try searching for another title, city, or country.
+            </p>
 
         </div>
 
