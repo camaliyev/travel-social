@@ -12,6 +12,7 @@
 <body>
 
 <header class="site-header">
+
     <div class="site-header-inner">
 
         <div class="logo">
@@ -53,6 +54,7 @@
         </div>
 
     </div>
+
 </header>
 
 
@@ -60,15 +62,11 @@
 
     {% with messages = get_flashed_messages() %}
         {% if messages %}
-
             {% for message in messages %}
-
                 <div class="flash-success">
                     {{ message }}
                 </div>
-
             {% endfor %}
-
         {% endif %}
     {% endwith %}
 
@@ -81,8 +79,6 @@
 
     {% endif %}
 
-
-    <!-- SEARCH BAR -->
 
     <div class="form-card">
 
@@ -103,80 +99,84 @@
     </div>
 
 
-    <!-- POSTS -->
+    {% if posts.items %}
 
-    {% if posts %}
+        {% for post in posts.items %}
 
-        {% for post in posts %}
+        <div class="post-card">
 
-            <div class="post-card">
+            <h2 class="post-title">
 
-                <h2 class="post-title">
+                <a href="{{ url_for('post_detail', post_id=post.id) }}">
+                    {{ post.title }}
+                </a>
 
-                    <a href="{{ url_for('post_detail', post_id=post.id) }}">
-                        {{ post.title }}
-                    </a>
+            </h2>
 
-                </h2>
+            {% if post.image_filename %}
 
+                <a href="{{ url_for('post_detail', post_id=post.id) }}">
 
-                {% if post.image_filename %}
+                    <img
+                        src="{{ url_for('static', filename='uploads/' + post.image_filename) }}"
+                        alt="{{ post.title }}"
+                        class="post-image">
 
-                    <a href="{{ url_for('post_detail', post_id=post.id) }}">
+                </a>
 
-                        <img
-                            src="{{ url_for('static', filename='uploads/' + post.image_filename) }}"
-                            alt="{{ post.title }}"
-                            class="post-image"
-                        >
+            {% endif %}
 
-                    </a>
+            <div class="post-location">
 
-                {% endif %}
-
-
-                <div class="post-location">
-                    📍 {{ post.city }}, {{ post.country }}
-                </div>
-
-
-                <p class="post-description">
-                    {{ post.description }}
-                </p>
-
-
-                <div class="post-meta">
-
-                    Posted by
-
-                    <a href="{{ url_for('profile', username=post.author.username) }}">
-                        {{ post.author.username }}
-                    </a>
-
-                    ·
-
-                    {{ post.created_at.strftime("%Y-%m-%d %H:%M") }}
-
-                </div>
-
-
-                <div class="post-actions">
-
-                    <span class="like-count">
-                        ❤️ {{ post.likes|length }}
-                    </span>
-
-                    <span>
-                        💬 {{ post.comments|length }}
-                    </span>
-
-                    <a href="{{ url_for('post_detail', post_id=post.id) }}">
-                        View Post
-                    </a>
-
-                </div>
+                📍 {{ post.city }}, {{ post.country }}
 
             </div>
+
+            <p class="post-description">
+
+                {{ post.description }}
+
+            </p>
+
+            <div class="post-meta">
+
+                Posted by
+
+                <a href="{{ url_for('profile', username=post.author.username) }}">
+
+                    {{ post.author.username }}
+
+                </a>
+
+                ·
+
+                {{ post.created_at.strftime("%Y-%m-%d %H:%M") }}
+
+            </div>
+
+            <div class="post-actions">
+
+                <span>
+
+                    ❤️ {{ post.likes|length }}
+
+                </span>
+
+                <span>
+
+                    💬 {{ post.comments|length }}
+
+                </span>
+
+                <a href="{{ url_for('post_detail', post_id=post.id) }}">
+
+                    View Post
+
+                </a>
+
+            </div>
+
+        </div>
 
         {% endfor %}
 
@@ -184,29 +184,73 @@
 
         <div class="post-card">
 
-            <h3>No posts yet 🌍</h3>
+            <h2>
+
+                No posts yet 🌍
+
+            </h2>
 
             {% if current_user.is_authenticated %}
 
-                <p>
-                    Be the first person to create a travel post.
-                </p>
-
                 <a href="{{ url_for('create_post') }}">
-                    Create Post
+
+                    Create your first post
+
                 </a>
-
-            {% else %}
-
-                <p>
-                    Login or create an account to start sharing your travels.
-                </p>
 
             {% endif %}
 
         </div>
 
     {% endif %}
+
+
+    <!-- Pagination -->
+
+    <div class="post-card">
+
+        <div
+            style="display:flex;
+                   justify-content:space-between;
+                   align-items:center;">
+
+            {% if posts.has_prev %}
+
+                <a href="{{ url_for('home', page=posts.prev_num) }}">
+
+                    ⬅ Previous
+
+                </a>
+
+            {% else %}
+
+                <span></span>
+
+            {% endif %}
+
+            <strong>
+
+                Page {{ posts.page }} of {{ posts.pages }}
+
+            </strong>
+
+            {% if posts.has_next %}
+
+                <a href="{{ url_for('home', page=posts.next_num) }}">
+
+                    Next ➡
+
+                </a>
+
+            {% else %}
+
+                <span></span>
+
+            {% endif %}
+
+        </div>
+
+    </div>
 
 </div>
 

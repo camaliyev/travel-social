@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from extensions import db, login_manager, migrate
 import os
 
@@ -19,9 +19,20 @@ import routes
 
 @app.route("/")
 def home():
-    posts = TravelPost.query.order_by(TravelPost.created_at.desc()).all()
+    page = request.args.get("page", 1, type=int)
 
-    return render_template("home.html", posts=posts)
+    posts = TravelPost.query.order_by(
+        TravelPost.created_at.desc()
+    ).paginate(
+        page=page,
+        per_page=5,
+        error_out=False
+    )
+
+    return render_template(
+        "home.html",
+        posts=posts
+    )
 
 
 if __name__ == "__main__":
