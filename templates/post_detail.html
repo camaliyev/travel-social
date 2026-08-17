@@ -8,9 +8,11 @@
     <link rel="stylesheet"
           href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
 <header class="site-header">
+
     <div class="site-header-inner">
 
         <div class="logo">
@@ -18,9 +20,13 @@
         </div>
 
         <div class="nav-links">
-            <a href="{{ url_for('home') }}">Home</a>
+
+            <a href="{{ url_for('home') }}">
+                Home
+            </a>
 
             {% if current_user.is_authenticated %}
+
                 <a href="{{ url_for('profile', username=current_user.username) }}">
                     Profile
                 </a>
@@ -28,57 +34,117 @@
                 <a href="{{ url_for('logout') }}">
                     Logout
                 </a>
+
             {% endif %}
+
         </div>
 
     </div>
+
 </header>
 
+
 <div class="container">
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flash-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
 
     <div class="post-card">
 
         <h1>{{ post.title }}</h1>
 
         {% if post.image_filename %}
+
             <img
                 src="{{ url_for('static', filename='uploads/' + post.image_filename) }}"
-                alt="{{ post.title }}"
-                class="post-image">
+                class="post-image"
+                alt="{{ post.title }}">
+
         {% endif %}
 
         <p>
+
             📍 {{ post.city }}, {{ post.country }}
+
         </p>
 
         <p>
+
             {{ post.description }}
+
         </p>
 
         <p>
+
             Posted by
+
             <a href="{{ url_for('profile', username=post.author.username) }}">
                 {{ post.author.username }}
             </a>
+
             ·
+
             {{ post.created_at.strftime("%Y-%m-%d %H:%M") }}
+
         </p>
 
         <hr>
 
-        <p>
+        <strong>
+
             ❤️ {{ post.likes|length }} Likes
-        </p>
+
+        </strong>
+
+        <br><br>
 
         {% if current_user.is_authenticated %}
-        <form action="{{ url_for('like_post', post_id=post.id) }}" method="POST">
-            <button class="primary-button" type="submit">
-                ❤️ Like
-            </button>
-        </form>
+
+            {% set liked = post.likes
+                | selectattr("user_id", "equalto", current_user.id)
+                | list %}
+
+            <form
+                action="{{ url_for('like_post', post_id=post.id) }}"
+                method="POST">
+
+                {% if liked %}
+
+                    <button
+                        class="danger-button"
+                        type="submit">
+
+                        💔 Unlike
+
+                    </button>
+
+                {% else %}
+
+                    <button
+                        class="primary-button"
+                        type="submit">
+
+                        ❤️ Like
+
+                    </button>
+
+                {% endif %}
+
+            </form>
+
         {% endif %}
 
+
         {% if current_user.id == post.user_id %}
+
             <br>
 
             <a href="{{ url_for('edit_post', post_id=post.id) }}">
@@ -94,13 +160,17 @@
                     class="danger-button"
                     type="submit"
                     onclick="return confirm('Delete this post?')">
+
                     Delete
+
                 </button>
 
             </form>
+
         {% endif %}
 
     </div>
+
 
     <h2>Comments</h2>
 
@@ -115,12 +185,21 @@
             {{ form.hidden_tag() }}
 
             <p>
-                {{ form.text.label }}<br>
+
+                {{ form.text.label }}
+
+                <br>
+
                 {{ form.text(rows=4) }}
+
             </p>
 
-            <button class="primary-button" type="submit">
+            <button
+                class="primary-button"
+                type="submit">
+
                 Add Comment
+
             </button>
 
         </form>
@@ -129,20 +208,29 @@
 
     {% endif %}
 
+
     {% if post.comments %}
 
         {% for comment in post.comments %}
 
         <div class="comment-card">
 
-            <strong>{{ comment.author.username }}</strong>
+            <strong>
+
+                {{ comment.author.username }}
+
+            </strong>
 
             <small>
+
                 {{ comment.created_at.strftime("%Y-%m-%d %H:%M") }}
+
             </small>
 
             <p>
+
                 {{ comment.text }}
+
             </p>
 
         </div>
@@ -152,7 +240,9 @@
     {% else %}
 
         <div class="comment-card">
+
             No comments yet.
+
         </div>
 
     {% endif %}
