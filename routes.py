@@ -6,9 +6,10 @@ from xml.etree.ElementTree import Comment
 from flask import render_template, redirect, url_for, flash, request
 from app import app
 from extensions import db
-from forms import RegistrationForm, LoginForm, TravelPostForm, CommentForm
+from forms import RegistrationForm, LoginForm, TravelPostForm, CommentForm, ProfileImageForm
 from models import User, TravelPost, Comment, Like
 from flask_login import login_user, logout_user, login_required, current_user
+
 
 
 
@@ -96,7 +97,14 @@ def create_post():
 def profile(username):
     user = User.query.filter_by(username=username).first_or_404()
     posts = user.posts
-    return render_template("profile.html", user=user, posts=posts)
+    form = ProfileImageForm()
+
+    return render_template(
+        "profile.html",
+        user=user,
+        posts=posts,
+        form=form
+    )
 
 
 @app.route("/edit_post/<int:post_id>", methods=["GET", "POST"])
@@ -231,4 +239,35 @@ def search():
         "search_results.html",
         posts=posts,
         query=query
+    )
+
+@app.route("/upload_profile_image", methods=["POST"])
+@login_required
+def upload_profile_image():
+    form = ProfileImageForm()
+
+    if form.validate_on_submit():
+
+        if form.image.data:
+
+            filename = secure_filename(form.image.data.filename)
+
+            form.image.data.save(
+                os.path.join(app.config["UPLOAD_FOLDER"], filename)
+            )
+
+            current_user.profile_image = filename
+
+            db.session.commit()
+
+            flash("Profile image uploaded successfully!")
+
+        else:
+            flash("No image selected. Please choose an image to upload.")
+
+    else:
+        flash("Invalid file type. Please upload a valid image file.")
+
+    return redirect(
+        url_for("profile", username=current_user.username)
     )

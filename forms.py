@@ -28,3 +28,14 @@ class TravelPostForm(FlaskForm):
 class CommentForm(FlaskForm):
     text = TextAreaField('Comment', validators=[DataRequired()])
     submit = SubmitField('Add Comment')
+
+
+class ProfileImageForm(FlaskForm):
+    image = FileField(
+        "Profile Image",
+        validators=[
+            FileAllowed(["jpg", "jpeg", "png"], "Only image files are allowed."),
+        ]
+    )
+
+    submit = SubmitField("Upload")

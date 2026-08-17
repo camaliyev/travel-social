@@ -8,6 +8,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(80), unique=True, nullable=False, index=True)
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(200), nullable=False)
+    profile_image = db.Column(db.String(255), nullable=True)
 
     posts = db.relationship('TravelPost', backref='author', lazy=True)
     comments = db.relationship('Comment', backref='author', lazy=True)
@@ -18,6 +19,8 @@ class User(db.Model, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    
 
 
 from extensions import db, login_manager

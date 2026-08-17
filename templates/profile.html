@@ -8,6 +8,7 @@
     <link rel="stylesheet"
           href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
 <header class="site-header">
@@ -19,12 +20,19 @@
         </div>
 
         <div class="nav-links">
-            <a href="{{ url_for('home') }}">Home</a>
-            <a href="{{ url_for('create_post') }}">Create Post</a>
 
-            {% if current_user.is_authenticated %}
-                <a href="{{ url_for('logout') }}">Logout</a>
-            {% endif %}
+            <a href="{{ url_for('home') }}">
+                Home
+            </a>
+
+            <a href="{{ url_for('create_post') }}">
+                Create Post
+            </a>
+
+            <a href="{{ url_for('logout') }}">
+                Logout
+            </a>
+
         </div>
 
     </div>
@@ -43,21 +51,64 @@
         {% endif %}
     {% endwith %}
 
-    <div class="post-card">
+    <div class="post-card" style="text-align:center;">
+
+        {% if user.profile_image %}
+
+            <img
+                src="{{ url_for('static', filename='uploads/' + user.profile_image) }}"
+                class="profile-image"
+                alt="Profile Image">
+
+        {% else %}
+
+            <img
+                src="{{ url_for('static', filename='default_profile.png') }}"
+                class="profile-image"
+                alt="Default Profile">
+
+        {% endif %}
 
         <h1>{{ user.username }}</h1>
 
-        <p>
-            <strong>Email:</strong>
-            {{ user.email }}
-        </p>
+        <p>{{ user.email }}</p>
 
         <p>
             <strong>Total Posts:</strong>
             {{ posts|length }}
         </p>
 
+        {% if current_user.id == user.id %}
+
+        <hr>
+
+        <form
+            action="{{ url_for('upload_profile_image') }}"
+            method="POST"
+            enctype="multipart/form-data">
+
+            {{ form.hidden_tag() }}
+
+            <p>
+
+                {{ form.image() }}
+
+            </p>
+
+            <button
+                class="primary-button"
+                type="submit">
+
+                Upload Profile Picture
+
+            </button>
+
+        </form>
+
+        {% endif %}
+
     </div>
+
 
     <h2>Travel Posts</h2>
 
@@ -65,68 +116,57 @@
 
         {% for post in posts %}
 
-            <div class="post-card">
+        <div class="post-card">
 
-                <h2 class="post-title">
-                    <a href="{{ url_for('post_detail', post_id=post.id) }}">
-                        {{ post.title }}
-                    </a>
-                </h2>
+            <h2>
 
-                <div class="post-location">
-                    📍 {{ post.city }}, {{ post.country }}
-                </div>
+                <a href="{{ url_for('post_detail', post_id=post.id) }}">
+                    {{ post.title }}
+                </a>
 
-                <p class="post-description">
-                    {{ post.description }}
-                </p>
+            </h2>
 
-                <div class="post-meta">
-                    {{ post.created_at.strftime("%Y-%m-%d %H:%M") }}
-                </div>
+            {% if post.image_filename %}
 
-                <div class="post-actions">
+                <img
+                    src="{{ url_for('static', filename='uploads/' + post.image_filename) }}"
+                    class="post-image"
+                    alt="{{ post.title }}">
 
-                    <span class="like-count">
-                        ❤️ {{ post.likes|length }}
-                    </span>
+            {% endif %}
 
-                    <span>
-                        💬 {{ post.comments|length }}
-                    </span>
+            <p>
 
-                    <a href="{{ url_for('post_detail', post_id=post.id) }}">
-                        View
-                    </a>
+                📍 {{ post.city }}, {{ post.country }}
 
-                    {% if current_user.id == post.user_id %}
+            </p>
 
-                        <a href="{{ url_for('edit_post', post_id=post.id) }}">
-                            Edit
-                        </a>
+            <p>
 
-                        <form action="{{ url_for('delete_post', post_id=post.id) }}"
-                              method="POST"
-                              style="margin:0;padding:0;background:none;">
+                {{ post.description }}
 
-                            <button class="danger-button" type="submit">
-                                Delete
-                            </button>
+            </p>
 
-                        </form>
+            <div class="post-actions">
 
-                    {% endif %}
+                ❤️ {{ post.likes|length }}
 
-                </div>
+                &nbsp;&nbsp;
+
+                💬 {{ post.comments|length }}
 
             </div>
+
+        </div>
 
         {% endfor %}
 
     {% else %}
 
         <div class="post-card">
-            <p>No posts yet.</p>
+
+            No travel posts yet.
+
         </div>
 
     {% endif %}
