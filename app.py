@@ -13,7 +13,7 @@ app.config["UPLOAD_FOLDER"] = os.path.join(
     "uploads"
 )
 
-os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
 db.init_app(app)
 login_manager.init_app(app)
