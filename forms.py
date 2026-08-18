@@ -25,7 +25,10 @@ class TravelPostForm(FlaskForm):
     image = FileField(
         'Travel Image',
         validators=[
-            FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')
+            FileAllowed(
+                ['jpg', 'jpeg', 'png', 'webp'],
+                'Images only!'
+           )
         ]
     )
 
