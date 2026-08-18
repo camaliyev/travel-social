@@ -21,7 +21,14 @@ class TravelPostForm(FlaskForm):
     description = TextAreaField('Description', validators=[DataRequired()])
     country = StringField('Country', validators=[DataRequired()])
     city = StringField('City', validators=[DataRequired()])
-    image = FileField('Travel Image', validators=[FileAllowed(['jpg', 'png'])])
+
+    image = FileField(
+        'Travel Image',
+        validators=[
+            FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')
+        ]
+    )
+
     submit = SubmitField('Create Post')
 
 

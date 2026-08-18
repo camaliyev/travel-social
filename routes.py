@@ -70,17 +70,18 @@ def create_post():
             filename = secure_filename(form.image.data.filename)
 
             form.image.data.save(
-                 os.path.join(app.config["UPLOAD_FOLDER"], filename)
+                os.path.join(app.config["UPLOAD_FOLDER"], filename)
             )
 
             image_filename = filename
+
         post = TravelPost(
             title=form.title.data,
             description=form.description.data,
             country=form.country.data,
             city=form.city.data,
             image_filename=image_filename,
-            user_id=current_user.id 
+            user_id=current_user.id
         )
 
         db.session.add(post)
