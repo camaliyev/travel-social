@@ -9,6 +9,8 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///travel_social.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["UPLOAD_FOLDER"] = os.path.join("static", "uploads")
 
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+
 db.init_app(app)
 login_manager.init_app(app)
 login_manager.login_view = "login"
